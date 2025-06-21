@@ -1,14 +1,10 @@
 from rest_framework import serializers
 from .models import Quiz, Question, Child, Attempt
 
+
 class QuizSerializer(serializers.ModelSerializer):
     class Meta:
         model = Quiz
-        fields = "__all__"
-
-class QuestionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Question
         fields = "__all__"
 
 class ChildSerializer(serializers.ModelSerializer):
@@ -23,3 +19,15 @@ class AttemptSerializer(serializers.ModelSerializer):
 
 class QuizGenerateSerializer(serializers.Serializer):
     lesson_id = serializers.IntegerField()
+
+
+class QuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Question
+        fields = "__all__"
+
+class QuizSerializer(serializers.ModelSerializer):
+    questions = QuestionSerializer(source="question_set", many=True, read_only=True)
+    class Meta:
+        model = Quiz
+        fields = ["id", "link_slug", "created_at", "lesson", "questions"]

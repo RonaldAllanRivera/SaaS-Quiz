@@ -1,12 +1,16 @@
 from rest_framework.views import APIView
+from rest_framework.generics import RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.generics import ListAPIView
 from rest_framework import status
-from .serializers import QuizGenerateSerializer
+from .serializers import QuizGenerateSerializer, QuizSerializer
 from .models import Quiz, Question
 from lessons.models import LessonText
 import requests
 import os
+
+
 
 class QuizGenerateAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -77,3 +81,35 @@ class QuizGenerateAPIView(APIView):
             else:
                 return Response({"error": "OpenAI API failed."}, status=500)
         return Response(serializer.errors, status=400)
+
+
+class QuizListAPIView(ListAPIView):
+    serializer_class = QuizSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        lesson_id = self.request.query_params.get("lesson")
+        qs = Quiz.objects.all()
+        if lesson_id:
+            qs = qs.filter(lesson__id=lesson_id)
+        return qs.order_by("-created_at")
+
+class QuizDetailAPIView(RetrieveAPIView):
+    queryset = Quiz.objects.all()
+    serializer_class = QuizSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = "id"
+
+class QuizQuestionAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, quiz_id, question_number):
+        try:
+            quiz = Quiz.objects.get(id=quiz_id)
+            # Order questions by id or a specific order if you wish
+            questions = quiz.question_set.order_by("id")
+            question = questions[question_number - 1]  # question_number is 1-based
+        except (Quiz.DoesNotExist, IndexError):
+            return Response({"error": "Question not found."}, status=404)
+        from .serializers import QuestionSerializer
+        return Response(QuestionSerializer(question).data)

@@ -1,13 +1,17 @@
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import LessonUploadSerializer
+from .serializers import LessonUploadSerializer, SubjectSerializer, LessonTextSerializer
+from rest_framework.permissions import IsAuthenticated
 from .models import LessonText, Subject
 from users.models import User
 import requests
 import base64
 import os
+
+
 
 class LessonUploadAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -71,3 +75,15 @@ class LessonUploadAPIView(APIView):
             else:
                 return Response({"error": "OpenAI Vision API failed."}, status=500)
         return Response(serializer.errors, status=400)
+
+class SubjectListAPIView(ListAPIView):
+    queryset = Subject.objects.all()
+    serializer_class = SubjectSerializer
+
+
+class ParentLessonListAPIView(ListAPIView):
+    serializer_class = LessonTextSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return LessonText.objects.filter(parent=self.request.user).order_by('-created_at')

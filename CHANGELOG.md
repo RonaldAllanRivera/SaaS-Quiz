@@ -1,4 +1,16 @@
-# 📜 CHANGELOG – AIWriter
+# 📜 CHANGELOG - QuizNest
+
+## [2.2.0] — 2025-06-21
+
+### Added
+
+- Subject list API endpoint for populating subject dropdown on frontend
+- Parent's uploaded lessons API endpoint for dashboard lesson management
+- Quiz list API endpoint with filter by lesson for parent quiz management
+- Quiz detail endpoint with nested questions for delivering full quizzes to frontend
+- Single-question API endpoint for paginated/stepwise quiz UI
+- All endpoints authenticated with DRF token-based authentication
+- All new endpoints verified working with Postman and test data
 
 ## [2.0.0] — 2025-06-21
 
