@@ -1,5 +1,20 @@
 # 📜 CHANGELOG - QuizNest
 
+## [2.2.1] — 2025-06-21
+
+### Fixed
+
+- All Django/DRF APIViews and serializers updated for Pylance compatibility: type hints, explicit Dict[str, Any] for `validated_data`, `getattr` for related fields, and conditional access to resolve static checker issues
+- Quiz creation now generates a guaranteed unique, non-empty `link_slug` using UUID to resolve IntegrityError and 500 errors when generating quizzes
+- Regex extraction of OpenAI quiz questions made robust to prevent `.group()` on `None` matches (eliminates internal server errors for bad AI output)
+- Reverse relationships on models now use correct `related_name` and type-safe access for static analysis and runtime safety
+
+### Changed
+
+- All quiz/question/lesson API logic now Pylance-friendly with zero type or attribute warnings in VS Code
+- Updated view logic for safer dict and attribute access
+
+
 ## [2.2.0] — 2025-06-21
 
 ### Added

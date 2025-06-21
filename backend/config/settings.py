@@ -77,8 +77,10 @@ if ENVIRONMENT == 'development':
         }
     }
 else:
+    # Prefer os.environ.get for flexibility here, then coerce to string
+    db_url = os.environ.get('DATABASE_URL') or f'sqlite:///{BASE_DIR / "db.sqlite3"}'
     DATABASES = {
-        'default': dj_database_url.config(default=env('DATABASE_URL'))
+        'default': dj_database_url.config(default=db_url)
     }
 
 

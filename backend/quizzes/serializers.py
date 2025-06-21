@@ -2,11 +2,6 @@ from rest_framework import serializers
 from .models import Quiz, Question, Child, Attempt
 
 
-class QuizSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Quiz
-        fields = "__all__"
-
 class ChildSerializer(serializers.ModelSerializer):
     class Meta:
         model = Child
@@ -27,7 +22,8 @@ class QuestionSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class QuizSerializer(serializers.ModelSerializer):
-    questions = QuestionSerializer(source="question_set", many=True, read_only=True)
+    questions = QuestionSerializer(many=True, read_only=True)
+
     class Meta:
         model = Quiz
         fields = ["id", "link_slug", "created_at", "lesson", "questions"]

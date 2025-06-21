@@ -8,7 +8,7 @@ class Quiz(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 class Question(models.Model):
-    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="questions")
     text = models.TextField()
     type = models.CharField(choices=[('mcq', 'MCQ'), ('tf', 'True/False')], max_length=3)
     options = models.JSONField()

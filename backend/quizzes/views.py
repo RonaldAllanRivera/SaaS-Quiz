@@ -1,16 +1,20 @@
 from rest_framework.views import APIView
-from rest_framework.generics import RetrieveAPIView
+from rest_framework.generics import RetrieveAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.generics import ListAPIView
 from rest_framework import status
-from .serializers import QuizGenerateSerializer, QuizSerializer
+from .serializers import QuizGenerateSerializer, QuizSerializer, QuestionSerializer
 from .models import Quiz, Question
 from lessons.models import LessonText
+from typing import Any, Dict
 import requests
 import os
+import json
+import re
+import uuid
 
 
+import uuid
 
 class QuizGenerateAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -18,15 +22,14 @@ class QuizGenerateAPIView(APIView):
     def post(self, request):
         serializer = QuizGenerateSerializer(data=request.data)
         if serializer.is_valid():
-            lesson_id = serializer.validated_data['lesson_id']
+            validated_data: Dict[str, Any] = serializer.validated_data  # type: ignore
+            lesson_id = validated_data['lesson_id']
 
-            # Get lesson and subject
             try:
                 lesson = LessonText.objects.get(id=lesson_id, parent=request.user)
             except LessonText.DoesNotExist:
                 return Response({'error': 'Lesson not found.'}, status=404)
 
-            # Use OpenAI to generate questions
             openai_api_key = os.environ.get("OPENAI_API_KEY")
             openai_endpoint = "https://api.openai.com/v1/chat/completions"
 
@@ -44,10 +47,8 @@ class QuizGenerateAPIView(APIView):
                 "Content-Type": "application/json",
             }
             payload = {
-                "model": "gpt-4-1106-preview",  # or your preferred model
-                "messages": [
-                    {"role": "user", "content": prompt}
-                ],
+                "model": "gpt-4-1106-preview",
+                "messages": [{"role": "user", "content": prompt}],
                 "max_tokens": 1024,
             }
             openai_response = requests.post(openai_endpoint, json=payload, headers=headers)
@@ -55,19 +56,20 @@ class QuizGenerateAPIView(APIView):
                 result = openai_response.json()
                 text = result["choices"][0]["message"]["content"]
 
-                # Try to parse the JSON list from the LLM output
-                import json
-                import re
-
-                try:
-                    json_text = re.search(r"\[.*\]", text, re.DOTALL).group()
-                    questions = json.loads(json_text)
-                except Exception:
+                match = re.search(r"\[.*\]", text, re.DOTALL)
+                if match is not None:
+                    json_text = match.group()
+                    try:
+                        questions = json.loads(json_text)
+                    except Exception:
+                        return Response({"error": "Failed to parse quiz questions from OpenAI output.", "raw": text}, status=500)
+                else:
                     return Response({"error": "Failed to parse quiz questions from OpenAI output.", "raw": text}, status=500)
 
-                # Save Quiz and Questions to DB
-                from lessons.models import Subject
-                quiz = Quiz.objects.create(lesson=lesson)
+                # === FIX: always generate a unique, non-empty link_slug ===
+                unique_slug = str(uuid.uuid4())[:8]  # Short unique slug
+                quiz = Quiz.objects.create(lesson=lesson, link_slug=unique_slug)
+
                 for q in questions:
                     Question.objects.create(
                         quiz=quiz,
@@ -77,10 +79,11 @@ class QuizGenerateAPIView(APIView):
                         answer=q.get('answer'),
                     )
 
-                return Response({"quiz_id": quiz.id, "questions": questions}, status=201)
+                return Response({"quiz_id": getattr(quiz, "id", None), "questions": questions}, status=201)
             else:
                 return Response({"error": "OpenAI API failed."}, status=500)
         return Response(serializer.errors, status=400)
+
 
 
 class QuizListAPIView(ListAPIView):
@@ -88,11 +91,14 @@ class QuizListAPIView(ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        lesson_id = self.request.query_params.get("lesson")
+        # DRF Request always has .query_params, but Pylance may warn
+        lesson_id = getattr(self.request, "query_params", None)
+        lesson_id = lesson_id.get("lesson") if lesson_id else None
         qs = Quiz.objects.all()
         if lesson_id:
             qs = qs.filter(lesson__id=lesson_id)
         return qs.order_by("-created_at")
+
 
 class QuizDetailAPIView(RetrieveAPIView):
     queryset = Quiz.objects.all()
@@ -100,16 +106,16 @@ class QuizDetailAPIView(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     lookup_field = "id"
 
+
 class QuizQuestionAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, quiz_id, question_number):
         try:
             quiz = Quiz.objects.get(id=quiz_id)
-            # Order questions by id or a specific order if you wish
-            questions = quiz.question_set.order_by("id")
+            # Use related_name "questions" and silence static checker
+            questions = getattr(quiz, "questions").order_by("id")
             question = questions[question_number - 1]  # question_number is 1-based
         except (Quiz.DoesNotExist, IndexError):
             return Response({"error": "Question not found."}, status=404)
-        from .serializers import QuestionSerializer
         return Response(QuestionSerializer(question).data)
