@@ -1,5 +1,15 @@
 # 📜 CHANGELOG - QuizNest
 
+## [2.3.0] — 2025-06-21
+
+### Added
+
+- Age and grade level fields to Child model for better quiz targeting
+- Parent can now set age and grade level when creating/editing a child profile
+- Quiz generation API prompt now includes child’s grade and age for simpler, grade-appropriate questions
+- All quiz generation and child serializers updated to handle new fields
+
+
 ## [2.2.1] — 2025-06-21
 
 ### Fixed

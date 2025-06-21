@@ -1,17 +1,19 @@
 # QuizNest 🐣 – AI-Powered Quiz Playground for Kids
 
-**QuizNest** is a SaaS platform that empowers parents to create personalized, AI-generated quizzes for their 3-year-old children using simple lesson image uploads. With gamified learning, performance tracking, and parental insights, QuizNest turns every moment into a learning opportunity.
+**QuizNest** is a SaaS platform that empowers parents to create personalized, AI-generated quizzes tailored to their children’s age and grade level, starting with elementary schoolers. Parents upload lesson images and select a subject, age, and grade level, ensuring quizzes match each child’s ability. With gamified learning, performance tracking, and parental insights, QuizNest turns every moment into a learning opportunity.
 
 ## 🚀 Features
 
 - 🔐 Google/Facebook login for parents
+- 👦👧 Parent-managed child profiles (with age and grade level)
 - 📸 Upload lesson images by subject (Math, English, Filipino, CLE, etc.)
-- 🧠 OpenAI-powered text extraction and quiz generation
+- 🧠 OpenAI-powered text extraction and quiz generation, customized for each grade
 - ❓ Auto-generated multiple choice and true/false quizzes
 - 🧒 One-question-per-page kid interface
 - 🎉 Token rewards for completed quizzes (custom avatars & backgrounds)
 - 📊 AI-analyzed performance feedback and improvement tips for parents
 - 🛡️ Child-safe design, dark mode, and text-to-speech support
+
 
 ## 📦 Tech Stack
 

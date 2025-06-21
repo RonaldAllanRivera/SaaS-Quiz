@@ -14,6 +14,8 @@ class AttemptSerializer(serializers.ModelSerializer):
 
 class QuizGenerateSerializer(serializers.Serializer):
     lesson_id = serializers.IntegerField()
+    child_id = serializers.IntegerField()
+
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -27,3 +29,4 @@ class QuizSerializer(serializers.ModelSerializer):
     class Meta:
         model = Quiz
         fields = ["id", "link_slug", "created_at", "lesson", "questions"]
+

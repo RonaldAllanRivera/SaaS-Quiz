@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import QuizGenerateSerializer, QuizSerializer, QuestionSerializer
-from .models import Quiz, Question
+from .models import Quiz, Question, Child
 from lessons.models import LessonText
 from typing import Any, Dict
 import requests
@@ -15,6 +15,7 @@ import uuid
 
 
 import uuid
+from .models import Quiz, Question, Child  # Make sure Child is imported
 
 class QuizGenerateAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -24,11 +25,17 @@ class QuizGenerateAPIView(APIView):
         if serializer.is_valid():
             validated_data: Dict[str, Any] = serializer.validated_data  # type: ignore
             lesson_id = validated_data['lesson_id']
+            child_id = validated_data['child_id']  # Expect child_id in the payload
 
             try:
                 lesson = LessonText.objects.get(id=lesson_id, parent=request.user)
             except LessonText.DoesNotExist:
                 return Response({'error': 'Lesson not found.'}, status=404)
+
+            try:
+                child = Child.objects.get(id=child_id, parent=request.user)
+            except Child.DoesNotExist:
+                return Response({'error': 'Child not found.'}, status=404)
 
             openai_api_key = os.environ.get("OPENAI_API_KEY")
             openai_endpoint = "https://api.openai.com/v1/chat/completions"
@@ -36,8 +43,8 @@ class QuizGenerateAPIView(APIView):
             prompt = (
                 f"You are an elementary teacher. Using this lesson text:\n\n"
                 f"'''{lesson.content}'''\n\n"
-                f"Generate 10 simple quiz questions for elementary students. "
-                "Use multiple choice and true/false only. Provide options for MCQ. "
+                f"Generate 10 quiz questions appropriate for a child in {child.get_grade_level_display()} (about age {child.age}). "  # type: ignore[attr-defined]
+                "Use simple multiple choice and true/false only. Provide options for MCQ. "
                 "Format as a JSON list with each question as an object: "
                 "{'type': 'mcq'|'tf', 'question': str, 'options': [str], 'answer': str}"
             )
@@ -66,7 +73,7 @@ class QuizGenerateAPIView(APIView):
                 else:
                     return Response({"error": "Failed to parse quiz questions from OpenAI output.", "raw": text}, status=500)
 
-                # === FIX: always generate a unique, non-empty link_slug ===
+                # === Unique link_slug logic ===
                 unique_slug = str(uuid.uuid4())[:8]  # Short unique slug
                 quiz = Quiz.objects.create(lesson=lesson, link_slug=unique_slug)
 
