@@ -1,0 +1,1 @@
+print('This is a placeholder. Run django-admin startproject backend . in this folder.')
