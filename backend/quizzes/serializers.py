@@ -20,3 +20,6 @@ class AttemptSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attempt
         fields = "__all__"
+
+class QuizGenerateSerializer(serializers.Serializer):
+    lesson_id = serializers.IntegerField()

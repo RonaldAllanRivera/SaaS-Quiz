@@ -10,3 +10,8 @@ class LessonTextSerializer(serializers.ModelSerializer):
     class Meta:
         model = LessonText
         fields = "__all__"
+
+class LessonUploadSerializer(serializers.Serializer):
+    image = serializers.ImageField()
+    subject = serializers.PrimaryKeyRelatedField(queryset=Subject.objects.all())
+
