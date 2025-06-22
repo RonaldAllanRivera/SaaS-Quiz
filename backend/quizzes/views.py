@@ -40,14 +40,28 @@ class QuizGenerateAPIView(APIView):
             openai_api_key = os.environ.get("OPENAI_API_KEY")
             openai_endpoint = "https://api.openai.com/v1/chat/completions"
 
-            prompt = (
-                f"You are an elementary teacher. Using this lesson text:\n\n"
-                f"'''{lesson.content}'''\n\n"
-                f"Generate 10 quiz questions appropriate for a child in {child.get_grade_level_display()} (about age {child.age}). "  # type: ignore[attr-defined]
-                "Use simple multiple choice and true/false only. Provide options for MCQ. "
-                "Format as a JSON list with each question as an object: "
-                "{'type': 'mcq'|'tf', 'question': str, 'options': [str], 'answer': str}"
-            )
+
+            subject_name = (getattr(lesson.subject, "name", "") or "").lower().strip()
+
+            if subject_name == "filipino":
+                prompt = (
+                    f"Ikaw ay isang guro ng elementarya. Gamit ang lesson text na ito:\n\n"
+                    f"'''{lesson.content}'''\n\n"
+                    f"Gumawa ng 10 tanong para sa asignaturang Filipino, na angkop sa batang nasa {child.get_grade_level_display()} (edad {child.age}). " # type: ignore[attr-defined]
+                    "Gumamit ng simple, batang-wika na tanong. Para sa True or False questions, gamitin lamang ang mga pagpipilian na 'Tama' at 'Mali'. "
+                    "Lahat ng tanong at sagot ay dapat nasa wikang Filipino. "
+                    "Ibigay ang output bilang JSON list kung saan ang bawat tanong ay isang object: "
+                    "{'type': 'mcq'|'tf', 'question': str, 'options': [str], 'answer': str}"
+                )
+            else:
+                prompt = (
+                    f"You are an elementary teacher. Using this lesson text:\n\n"
+                    f"'''{lesson.content}'''\n\n"
+                    f"Generate 10 quiz questions appropriate for a child in {child.get_grade_level_display()} (about age {child.age}). " # type: ignore[attr-defined]
+                    "Use simple multiple choice and true/false only. Provide options for MCQ. "
+                    "Format as a JSON list with each question as an object: "
+                    "{'type': 'mcq'|'tf', 'question': str, 'options': [str], 'answer': str}"
+                )
 
             headers = {
                 "Authorization": f"Bearer {openai_api_key}",

@@ -25,7 +25,6 @@ class Child(models.Model):
         ('5', 'Grade 5'),
         ('6', 'Grade 6'),
     ]
-    grade_level = models.IntegerField(choices=GRADE_CHOICES)
     parent = models.ForeignKey('users.User', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     age = models.PositiveIntegerField(null=True, blank=True)
