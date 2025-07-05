@@ -19,6 +19,7 @@
 
 - **Frontend:** Next.js (React) with NextAuth
 - **Backend:** Django + Django REST Framework
+- **Authentication:** Google OAuth2 with django-allauth and dj-rest-auth
 - **AI:** OpenAI GPT-4 Vision for OCR and quiz generation
 - **Payments:** Stripe for subscription plans
 - **Database:** PostgreSQL
@@ -30,7 +31,11 @@
 - Node.js ≥ 18
 - Python ≥ 3.10
 - PostgreSQL
-- API Keys: OpenAI, Stripe, Google (OAuth)
+- API Keys: 
+  - OpenAI API Key
+  - Google OAuth2 Client ID & Secret
+  - Stripe API Keys (for payments)
+  - Email SMTP Settings (for production)
 
 ### Local Setup
 

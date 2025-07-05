@@ -1,5 +1,19 @@
 # 📜 CHANGELOG - QuizNest
 
+## [2.5.0] — 2025-07-06
+
+### Added
+
+- **Google Social Login**: Integrated Google OAuth2 authentication for seamless sign-in
+- **Environment-based Email Configuration**: Added support for different email backends in development and production
+- **Email Verification**: Configured email verification settings for production environments
+
+### Fixed
+
+- Resolved `NoReverseMatch` error for `account_signup` URL
+- Fixed email sending configuration to prevent connection errors in development
+- Updated deprecated allauth settings to use current recommended configurations
+
 ## [2.4.0] — 2025-07-05
 
 ### Added
