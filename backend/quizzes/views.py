@@ -3,8 +3,21 @@ from rest_framework.generics import RetrieveAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import QuizGenerateSerializer, QuizSerializer, QuestionSerializer
-from .models import Quiz, Question, Child
+from rest_framework.views import APIView
+from rest_framework.generics import RetrieveAPIView, ListAPIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import (
+    QuizGenerateSerializer,
+    QuizSerializer,
+    QuestionSerializer,
+    AnswerSubmitSerializer,
+    AttemptSerializer,
+    SpendTokensSerializer,  # Added
+    ChildSerializer,  # Added
+)
+from .models import Quiz, Question, Child, Attempt, AttemptAnswer # Added
 from lessons.models import LessonText
 from typing import Any, Dict
 import requests
@@ -12,6 +25,7 @@ import os
 import json
 import re
 import uuid
+from django.utils import timezone # Added
 
 
 import uuid
@@ -140,3 +154,111 @@ class QuizQuestionAPIView(APIView):
         except (Quiz.DoesNotExist, IndexError):
             return Response({"error": "Question not found."}, status=404)
         return Response(QuestionSerializer(question).data)
+
+
+
+class QuizSubmitAnswerAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, quiz_id, question_id):
+        serializer = AnswerSubmitSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        child_id = request.data.get("child_id")
+        if not child_id:
+            return Response({"error": "Child ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            question = Question.objects.get(id=question_id, quiz_id=quiz_id)
+            child = Child.objects.get(id=child_id, parent=request.user)
+        except (Question.DoesNotExist, Child.DoesNotExist):
+            return Response({"error": "Invalid quiz, question, or child."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Get or create an attempt for this quiz and child
+        attempt, created = Attempt.objects.get_or_create(
+            child=child, 
+            quiz_id=quiz_id, 
+            completed_at__isnull=True # Assumes one active attempt at a time
+        )
+
+        # Check if this question has already been answered in this attempt
+        if AttemptAnswer.objects.filter(attempt=attempt, question=question).exists():
+            return Response({"error": "This question has already been answered."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check answer and update score
+        submitted_answer = serializer.validated_data["answer"]
+        is_correct = (submitted_answer.strip().lower() == str(question.answer).strip().lower())
+
+        if is_correct:
+            attempt.score += 1
+
+        # Record the answer
+        AttemptAnswer.objects.create(
+            attempt=attempt, 
+            question=question, 
+            answer=submitted_answer, 
+            is_correct=is_correct
+        )
+
+        # Check if the quiz is complete
+        total_questions = question.quiz.questions.count()
+        answered_count = attempt.answers.count()
+
+        if answered_count >= total_questions:
+            attempt.completed_at = timezone.now()
+            passing_score = total_questions * 0.7  # 70% to pass
+
+            if attempt.score >= passing_score:
+                attempt.passed = True
+                child.tokens += 10  # Award 10 tokens for passing
+                child.save()
+        
+        attempt.save()
+
+        return Response(AttemptSerializer(attempt).data, status=status.HTTP_200_OK)
+
+
+class SpendTokensAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    ITEM_COSTS = {
+        "avatar": 50,
+        "background": 100,
+    }
+
+    def post(self, request, *args, **kwargs):
+        serializer = SpendTokensSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        child_id = request.data.get("child_id")
+        if not child_id:
+            return Response({"error": "Child ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            child = Child.objects.get(id=child_id, parent=request.user)
+        except Child.DoesNotExist:
+            return Response({"error": "Child not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        item_type = serializer.validated_data["item_type"]
+        item_name = serializer.validated_data["item_name"]
+
+        cost = self.ITEM_COSTS.get(item_type)
+        if cost is None:
+            return Response({"error": f"Invalid item type: {item_type}"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if child.tokens < cost:
+            return Response({"error": "Not enough tokens."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Deduct tokens and update the child's profile
+        child.tokens -= cost
+        if item_type == "avatar":
+            child.avatar = item_name
+        elif item_type == "background":
+            child.background = item_name
+        
+        child.save()
+
+        return Response(ChildSerializer(child).data, status=status.HTTP_200_OK)
+

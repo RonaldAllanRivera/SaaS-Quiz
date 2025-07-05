@@ -1,5 +1,21 @@
 # 📜 CHANGELOG - QuizNest
 
+## [2.4.0] — 2025-07-05
+
+### Added
+
+- **Quiz Answer Submission**: New endpoint (`/quizzes/<quiz_id>/questions/<question_id>/submit/`) allows children to submit answers one by one.
+- **Automatic Scoring & Rewards**: The submission API automatically checks answers, updates the attempt score, and awards tokens to the child's profile upon passing a quiz.
+- **Token Spending API**: New endpoint (`/quizzes/rewards/spend/`) allows children to spend their earned tokens on virtual items like avatars and backgrounds.
+- **AI-Powered Feedback Reports**: New endpoint (`/reports/generate/`) uses OpenAI to generate a personalized, encouraging feedback report for parents based on a child's incorrect answers.
+- **API Versioning**: All backend APIs are now versioned under the `/api/v1/` prefix for better long-term maintenance and scalability.
+
+### Fixed
+
+- Resolved multiple bugs during testing, including a missing `Pillow` dependency, a corrupted virtual environment, and deprecated OpenAI model names (`gpt-4-vision-preview`).
+- Corrected the OpenAI API payload structure for `gpt-4-turbo` to handle image URLs correctly.
+
+
 ## [2.3.0] — 2025-06-21
 
 ### Added

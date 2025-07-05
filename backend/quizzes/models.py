@@ -37,6 +37,19 @@ class Child(models.Model):
 class Attempt(models.Model):
     child = models.ForeignKey(Child, on_delete=models.CASCADE)
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
-    score = models.IntegerField()
-    passed = models.BooleanField()
+    score = models.IntegerField(default=0)
+    passed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
+
+class AttemptAnswer(models.Model):
+    attempt = models.ForeignKey(Attempt, on_delete=models.CASCADE, related_name="answers")
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    answer = models.CharField(max_length=100)
+    is_correct = models.BooleanField()
+
+
+class Feedback(models.Model):
+    attempt = models.OneToOneField(Attempt, on_delete=models.CASCADE, related_name="quiz_feedback")
+    ai_review = models.TextField()

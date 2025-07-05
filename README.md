@@ -58,6 +58,28 @@ npm run dev
 
 See `.env.example` files in both `/backend` and `/frontend` for necessary configuration variables.
 
+## ⚙️ API Endpoints
+
+All backend endpoints are versioned under `/api/v1/`. Authentication is required for most endpoints.
+
+### Authentication
+- `POST /api-token-auth/` - Obtain user authentication token.
+
+### Lessons & Subjects
+- `GET /api/v1/lessons/subjects/` - List all available subjects.
+- `POST /api/v1/lessons/upload/` - Upload a lesson image to generate lesson text.
+- `GET /api/v1/lessons/my-lessons/` - List all lessons for the authenticated parent.
+
+### Quizzes & Questions
+- `POST /api/v1/quizzes/generate/` - Generate a new quiz from a lesson.
+- `GET /api/v1/quizzes/` - List all quizzes for the authenticated parent.
+- `GET /api/v1/quizzes/<quiz_id>/questions/<question_number>/` - Get a specific question from a quiz.
+- `POST /api/v1/quizzes/<quiz_id>/questions/<question_id>/submit/` - Submit an answer for a question.
+
+### Rewards & Reports
+- `POST /api/v1/quizzes/rewards/spend/` - Spend tokens on rewards (e.g., avatars).
+- `POST /api/v1/reports/generate/` - Generate an AI-powered feedback report for a quiz attempt.
+
 ## 💡 Project Goals
 
 - Empower young learners through fun and engaging AI-powered quizzes

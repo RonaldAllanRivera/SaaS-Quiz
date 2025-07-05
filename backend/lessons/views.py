@@ -49,14 +49,16 @@ class LessonUploadAPIView(APIView):
                     "content": [
                         {
                             "type": "image_url",
-                            "image_url": f"data:image/png;base64,{image_b64}"
+                            "image_url": {
+                                "url": f"data:image/png;base64,{image_b64}"
+                            }
                         }
                     ],
                 },
             ]
 
             payload = {
-                "model": "gpt-4-vision-preview",
+                "model": "gpt-4-turbo",
                 "messages": messages,
                 "max_tokens": 1024,
             }

@@ -5,3 +5,7 @@ class FeedbackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feedback
         fields = "__all__"
+
+
+class FeedbackGenerateSerializer(serializers.Serializer):
+    attempt_id = serializers.IntegerField()
