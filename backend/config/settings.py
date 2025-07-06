@@ -1,15 +1,15 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv
 import environ
 import dj_database_url
 
-# Load env
-load_dotenv()
-env = environ.Env()
-environ.Env.read_env(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
-
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from .env file
+# This will read the .env file in the backend/ directory
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # ==== Site Info ====
 SITE_NAME = os.getenv("SITE_NAME", "QuizNest")

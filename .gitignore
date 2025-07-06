@@ -35,3 +35,6 @@ media/
 # OS junk
 .DS_Store
 Thumbs.db
+
+# ZIP files
+*.zip

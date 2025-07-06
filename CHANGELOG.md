@@ -8,6 +8,12 @@
 - **Environment-based Email Configuration**: Added support for different email backends in development and production
 - **Email Verification**: Configured email verification settings for production environments
 
+### Changed
+
+- Moved environment files (`.env` and `.env-sample`) to the backend directory for better organization
+- Removed redundant root `manage.py` in favor of the one in the backend directory
+- Updated documentation to reflect new file structure and setup instructions
+
 ### Fixed
 
 - Resolved `NoReverseMatch` error for `account_signup` URL

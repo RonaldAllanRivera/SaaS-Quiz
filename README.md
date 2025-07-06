@@ -46,9 +46,13 @@ cd quiznest
 # Backend setup
 cd backend
 python -m venv venv
-source venv/bin/activate
+# On Windows:
+.\venv\Scripts\activate
+# On macOS/Linux:
+# source venv/bin/activate
+
 pip install -r requirements.txt
-cp .env.example .env
+cp .env-sample .env  # Update with your actual environment variables
 python manage.py migrate
 python manage.py runserver
 
