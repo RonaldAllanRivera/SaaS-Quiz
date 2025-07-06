@@ -10,3 +10,10 @@ export const useAuth = () => {
   }
   return context;
 };
+
+// Extend the AuthContextType to include userEmail
+declare module '@/contexts/AuthContext' {
+  interface AuthContextType {
+    userEmail: string | null;
+  }
+}

@@ -24,9 +24,8 @@ urlpatterns = [
     path('api/v1/auth/', include('dj_rest_auth.urls')),
     path('api/v1/auth/registration/', include('dj_rest_auth.registration.urls')),
     
-    # Social Auth
+    # Social Authentication (Google only)
     path('api/v1/auth/google/', GoogleLogin.as_view(), name='google_login'),
-    path('api/v1/auth/facebook/', include('allauth.socialaccount.providers.facebook.urls')),
 
     # Legacy auth, to be deprecated
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),

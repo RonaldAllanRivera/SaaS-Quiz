@@ -4,7 +4,7 @@
 
 ## 🚀 Features
 
-- 🔐 Google/Facebook login for parents
+- 🔐 Secure Google login for parents
 - 👦👧 Parent-managed child profiles (with age and grade level)
 - 📸 Upload lesson images by subject (Math, English, Filipino, CLE, etc.)
 - 🧠 OpenAI-powered text extraction and quiz generation, customized for each grade
@@ -17,7 +17,7 @@
 
 ## 📦 Tech Stack
 
-- **Frontend:** Next.js (React) with NextAuth
+- **Frontend:** Next.js (React) with custom auth context
 - **Backend:** Django + Django REST Framework
 - **Authentication:** Google OAuth2 with django-allauth and dj-rest-auth
 - **AI:** OpenAI GPT-4 Vision for OCR and quiz generation
@@ -33,7 +33,7 @@
 - PostgreSQL
 - API Keys: 
   - OpenAI API Key
-  - Google OAuth2 Client ID & Secret
+  - Google OAuth2 Client ID (for web application)
   - Stripe API Keys (for payments)
   - Email SMTP Settings (for production)
 

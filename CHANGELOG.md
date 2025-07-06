@@ -1,5 +1,19 @@
 # 📜 CHANGELOG - QuizNest
 
+## [2.5.1] — 2025-07-06
+
+### Added
+- User email display in the welcome message after login
+- Automatic user profile fetching after authentication
+
+### Changed
+- Improved welcome message visibility with better text contrast
+- Enhanced error handling for user profile fetching
+- Removed Facebook login references from the UI
+
+### Fixed
+- Fixed email display in the welcome message for Google OAuth users
+
 ## [2.5.0] — 2025-07-06
 
 ### Added

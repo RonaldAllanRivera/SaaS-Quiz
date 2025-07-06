@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
 
 export default function Home() {
-  const { isAuthenticated, logout, loading } = useAuth();
+  const { isAuthenticated, logout, loading, userEmail } = useAuth();
 
   if (loading) {
     return (
@@ -22,8 +22,8 @@ export default function Home() {
         
         <div className="mt-8">
           {isAuthenticated ? (
-            <div>
-              <p className="text-xl">Welcome back!</p>
+            <div className="text-center">
+              <p className="text-xl text-gray-800">Welcome back {userEmail || 'User'}!</p>
               <button
                 onClick={logout}
                 className="mt-4 px-6 py-2 font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
