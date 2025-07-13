@@ -53,6 +53,7 @@ python -m venv venv
 
 pip install -r requirements.txt
 cp .env-sample .env  # Update with your actual environment variables
+# NOTE: The .env file is now located in the backend directory. All backend environment variables must be set in backend/.env.
 python manage.py migrate
 python manage.py runserver
 
@@ -65,7 +66,14 @@ npm run dev
 
 ## 📄 Environment Variables
 
-See `.env.example` files in both `/backend` and `/frontend` for necessary configuration variables.
+See `.env-sample` in `/backend` and `.env.example` in `/frontend` for necessary configuration variables.
+
+**If you write custom scripts in the backend that need environment variables, import and call `load_env.py` before accessing env vars:**
+```python
+from load_env import load_backend_env
+load_backend_env()
+```
+This ensures your script loads `backend/.env` just like Django does.
 
 ## ⚙️ API Endpoints
 

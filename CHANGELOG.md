@@ -1,5 +1,16 @@
 # 📜 CHANGELOG - QuizNest
 
+## [2.5.2] — 2025-07-13
+
+### Changed
+- Backend `.env` file is now always loaded from the `backend/` directory for all Django and custom scripts
+- Updated README.md to clarify `.env` location and backend setup steps
+
+### Added
+- Utility script `backend/load_env.py` for loading environment variables in custom backend scripts
+
+---
+
 ## [2.5.1] — 2025-07-06
 
 ### Added
