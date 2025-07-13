@@ -5,6 +5,7 @@
 ### Changed
 - Backend `.env` file is now always loaded from the `backend/` directory for all Django and custom scripts
 - Updated README.md to clarify `.env` location and backend setup steps
+- Removed staticfiles Docker volume mount from backend service to prevent local staticfiles folder from hiding collected static files; Django admin static is now always served correctly in Docker.
 
 ### Added
 - Utility script `backend/load_env.py` for loading environment variables in custom backend scripts
@@ -32,6 +33,7 @@
 - **Google Social Login**: Integrated Google OAuth2 authentication for seamless sign-in
 - **Environment-based Email Configuration**: Added support for different email backends in development and production
 - **Email Verification**: Configured email verification settings for production environments
+- **Improved Docker Local Development**: Database password is now loaded from a root `.env` file (gitignored) instead of being hardcoded in `docker-compose.yml`. This is best practice and prevents secret scanning alerts.
 
 ### Changed
 

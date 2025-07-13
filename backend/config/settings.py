@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',  # Required by allauth
 
     # 3rd Party
+    'whitenoise.runserver_nostatic',  # Disable Django's static file handling in dev
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
@@ -57,9 +58,10 @@ INSTALLED_APPS = [
 
 # ==== Middleware ====
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add whitenoise middleware
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -132,6 +134,10 @@ USE_TZ = True
 # ==== Static Files ====
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # ==== Default Primary Key ====
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

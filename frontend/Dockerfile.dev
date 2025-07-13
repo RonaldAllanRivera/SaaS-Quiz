@@ -1,0 +1,25 @@
+# Frontend Dockerfile for LOCAL DEVELOPMENT
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Set environment variables
+ENV PATH /app/node_modules/.bin:$PATH
+ENV NODE_ENV=development
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy all files
+COPY . .
+
+# Expose port
+EXPOSE 3000
+
+# Start development server
+# Note: We use docker-compose 'command:' to run the dev server
+# This allows for live reloading with volumes

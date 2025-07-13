@@ -23,8 +23,53 @@
 - **AI:** OpenAI GPT-4 Vision for OCR and quiz generation
 - **Payments:** Stripe for subscription plans
 - **Database:** PostgreSQL
+- **DevOps:** Docker & Docker Compose for local development and orchestration
 
 ## 🛠️ Getting Started
+
+### 🐳 Docker-based Local Development
+
+You can run the entire app locally (backend, frontend, and database) using Docker and Docker Compose. This is the recommended way to develop and test the app.
+
+### 1. One-time Setup
+- Ensure you have Docker and Docker Compose installed
+- **Create a `.env` file in the project root (same folder as `docker-compose.yml`) with:**
+  ```
+  POSTGRES_PASSWORD=postgres
+  ```
+  This file is required for Docker Compose to start the database. It is gitignored and should never be committed.
+- Copy `.env.example` to `.env` in `backend/` and fill in your secrets
+- (Optional) Copy `.env.local.example` to `frontend/.env.local` for frontend env vars
+
+### 2. Start All Services
+
+```bash
+# From the project root
+docker-compose up
+```
+
+- This will build (if needed) and start the backend (Django), frontend (Next.js), and a PostgreSQL database
+- Static files are collected automatically
+- All dependencies are installed automatically in the containers
+- No manual database setup is required
+
+### 3. Access the App
+- Backend API: http://localhost:8000
+- Frontend: http://localhost:3000
+- Django Admin: http://localhost:8000/admin/
+
+### 4. Stopping Services
+
+```bash
+docker-compose down
+```
+
+### 5. Notes
+- If you change dependencies (backend/requirements.txt or frontend/package.json), re-run `docker-compose build`
+- If ports are in use, either stop the conflicting process or change the port in `docker-compose.yml`
+- If you want to reset the DB and volumes: `docker-compose down -v`
+- The backend requirements now include allauth, dj-rest-auth, PyJWT, cryptography, and whitenoise for full authentication and static file support.
+- **Troubleshooting:** If Django admin is missing styles or static files, make sure you do NOT have a local `backend/staticfiles` folder. Docker now manages static files internally, and local folders can interfere with this.
 
 ### Prerequisites
 

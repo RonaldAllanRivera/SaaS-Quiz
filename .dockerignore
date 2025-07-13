@@ -1,0 +1,23 @@
+# Ignore Python cache and venv
+backend/__pycache__/
+backend/venv/
+backend/db.sqlite3
+backend/media/
+backend/staticfiles/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore node modules and build artifacts
+frontend/node_modules/
+frontend/.next/
+frontend/.env*
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore test and log files
+*.log
+*.test
+*.tmp
