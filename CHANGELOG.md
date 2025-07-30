@@ -3,6 +3,7 @@
 ## [2.5.3] — 2025-07-30
 
 ### Added
+- Django admin support for Books, BookPages, BookQuiz, BookQuizQuestion, BookQuizAttempt, BookQuizAttemptAnswer. All generated stories and quizzes are now viewable and manageable in the admin UI.
 - Detailed Postman instructions for testing new Books (AI-powered stories and quizzes) API endpoints (see README).
 
 ### Fixed
