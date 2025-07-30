@@ -1,5 +1,19 @@
 # 📜 CHANGELOG - QuizNest
 
+## [2.5.3] — 2025-07-30
+
+### Added
+- Detailed Postman instructions for testing new Books (AI-powered stories and quizzes) API endpoints (see README).
+
+### Fixed
+- Book image/media files now reliably saved to root `media/` folder and served at `/media/` in development.
+- Docker Compose now uses `DEBUG=true` for correct Django dev mode.
+- Docker Compose maps local `./media` to `/app/media` for backend container.
+- Django `urls.py` patched to serve media files in dev (`static(settings.MEDIA_URL, ...)`).
+
+### Changed
+- README updated for Books API and media/image handling.
+
 ## [2.5.2] — 2025-07-13
 
 ### Changed
@@ -11,6 +25,7 @@
 - Utility script `backend/load_env.py` for loading environment variables in custom backend scripts
 
 ---
+
 
 ## [2.5.1] — 2025-07-06
 

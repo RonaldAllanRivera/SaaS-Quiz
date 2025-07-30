@@ -12,13 +12,38 @@ This feature will allow kids to request AI-generated stories (with images) based
 - **API Structure**: Django REST Framework, endpoints under `/api/v1/`.
 
 ## Feature Requirements
+
+### 📚 Books (AI-powered stories with images)
+- Generate stories with 2–3 pages and relevant images from Pixabay
+- Each story is tailored to the child’s topic, age, grade, and lexile
+- Each story has its own quiz (separate from lesson quizzes)
+- Images are deduplicated and stored locally
+- Fallback image is used if Pixabay fails
+
+#### Books API Endpoints
+- `POST /api/v1/books/generate/` – Generate a new story with images
+- `POST /api/v1/books/quiz/` – Generate a quiz for a story
+- `POST /api/v1/books/image/` – Fetch a deduplicated image from Pixabay for a keyword
+
+### 📝 Lessons (Image-based quiz generation)
+- Upload lesson images, extract text, and generate quizzes from lesson content
+- Each lesson has its own quiz (separate from books quizzes)
+
+### Shared Features
+- Both books and lessons use the same child, lexile, age, grade, and authentication system
+- Both books and lessons use the same token rewards, performance feedback, and improvement tips
+
 1. **API Endpoint for Story Generation**
    - Input: topic (text), grade level (from logged-in child), child_id
-   - Output: story (max 20 pages), 1 image per page, category (AI-generated), story & images stored
-2. **Image Generation & Optimization**
-   - Use OpenAI or similar for kid-friendly images
+   - Output: story (max 20 pages), 1 image per page, category (AI-generated), story & image references stored
+2. **Image Sourcing & Caching**
+   - Use free stock image APIs (Pixabay, Pexels, Unsplash) with safe search
+   - AI generates search queries for each story page
+   - Implement hybrid caching:
+     - Hotlink images initially
+     - Cache locally or on S3 for better performance
+     - Fallback to default images if needed
    - Optimize images (<500KB, web-friendly format)
-   - Store images in AWS (S3)
 3. **Story Storage**
    - Store stories in DB (new model or extend LessonText)
    - Store images in S3, save URLs in DB
@@ -36,8 +61,9 @@ This feature will allow kids to request AI-generated stories (with images) based
 ## Task List
 - [x] Review current system architecture and relevant code (tokens, messages, DB, AWS integration)
 - [ ] Design API endpoint for story generation (input: topic, grade level, child_id)
-- [ ] Integrate OpenAI API for story and image generation with prompt engineering
-- [ ] Implement image optimization (<500KB, web-friendly formats)
+- [ ] Integrate free stock image API (Pixabay/Pexels/Unsplash) with safe search
+- [ ] Implement hybrid image caching (hotlink + S3/local storage)
+- [ ] Add fallback/default images for failed searches
 - [ ] Ensure grade-level adaptation in story generation
 - [ ] Paginate story (max 20 pages, 1 image per page)
 - [ ] Store stories in DB; upload images to AWS
@@ -50,8 +76,9 @@ This feature will allow kids to request AI-generated stories (with images) based
 
 ## Next Steps
 - Design and implement the story generation API endpoint (backend)
-- Update DB models if needed for stories, images, categories
-- Implement image upload to AWS and optimization
+- Update DB models for stories, image references, and categories
+- Implement hybrid image caching strategy
+- Set up safe search filters and content moderation
 - Frontend: Add UI for topic input, story display, image paging, quiz, and story selection
 
 ---

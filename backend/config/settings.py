@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'lessons',
     'quizzes',
     'reports',
+    'books',
 ]
 
 # ==== Middleware ====
@@ -69,6 +70,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware', # allauth middleware
 ]
+
+# ==== Media Files ====
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # ==== URLs & WSGI ====
 ROOT_URLCONF = 'config.urls'

@@ -16,6 +16,7 @@ urlpatterns = [
     path('api/v1/lessons/', include('lessons.urls')),
     path('api/v1/quizzes/', include('quizzes.urls')),
     path('api/v1/reports/', include('reports.urls')),
+    path('api/v1/books/', include('books.urls')),
 
     # Django Allauth URLs - Required for social authentication
     path('accounts/', include('allauth.urls')),  # This includes the account_signup URL
@@ -34,3 +35,4 @@ urlpatterns = [
 # Only for development:
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

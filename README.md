@@ -17,6 +17,56 @@
 
 ## 📦 Tech Stack
 
+---
+
+## 📚 Books API (AI Stories & Quizzes)
+
+### Media/Image Handling
+- Book/story images are fetched from Pixabay, deduplicated, and stored in the root `media/book_images/` folder.
+- Images are served at `/media/book_images/...` in development (Django `DEBUG=true`).
+- Docker Compose must use `DEBUG=true` (not `1` or `True`) for Django to serve media files locally.
+- The backend container must map `./media:/app/media` so media files persist and are accessible.
+
+### Postman Testing Instructions
+1. **Authenticate and Obtain Token** (if needed)
+   - Use `/api/v1/auth/login/` or Google OAuth flow to get a token.
+2. **Generate a New Book Story**
+   - `POST /api/v1/books/generate/`
+   - Body:
+     ```json
+     {
+       "topic": "Dinosaurs",
+       "grade_level": 3,
+       "lexile": 100,
+       "child_id": 42
+     }
+     ```
+   - Response: Book object with pages, each with `image` (media URL).
+3. **Generate a Quiz for a Book**
+   - `POST /api/v1/books/quiz/`
+   - Body:
+     ```json
+     {
+       "story_id": 101,
+       "child_id": 42
+     }
+     ```
+   - Response: Quiz object with questions.
+4. **Fetch a Deduplicated Image from Pixabay**
+   - `POST /api/v1/books/image/`
+   - Body:
+     ```json
+     {
+       "keyword": "dinosaur"
+     }
+     ```
+   - Response: `{ "image_url": "/media/book_images/...", ... }`
+
+**All endpoints require authentication. Use the same child IDs and user context as with lessons. Book and lesson quizzes are separate.**
+
+---
+
+
 - **Frontend:** Next.js (React) with custom auth context
 - **Backend:** Django + Django REST Framework
 - **Authentication:** Google OAuth2 with django-allauth and dj-rest-auth
@@ -132,15 +182,36 @@ All backend endpoints are versioned under `/api/v1/`. Authentication is required
 - `POST /api/v1/lessons/upload/` - Upload a lesson image to generate lesson text.
 - `GET /api/v1/lessons/my-lessons/` - List all lessons for the authenticated parent.
 
-### Quizzes & Questions
+### Quizzes & Questions (Lessons)
 - `POST /api/v1/quizzes/generate/` - Generate a new quiz from a lesson.
 - `GET /api/v1/quizzes/` - List all quizzes for the authenticated parent.
 - `GET /api/v1/quizzes/<quiz_id>/questions/<question_number>/` - Get a specific question from a quiz.
 - `POST /api/v1/quizzes/<quiz_id>/questions/<question_id>/submit/` - Submit an answer for a question.
 
+### Books & Stories
+- `POST /api/v1/books/generate/` - Generate a new story with images.
+- `GET /api/v1/books/` - List all books for the authenticated parent.
+- `GET /api/v1/books/<book_id>/questions/<question_number>/` - Get a specific question from a book.
+- `POST /api/v1/books/<book_id>/questions/<question_id>/submit/` - Submit an answer for a question.
+
 ### Rewards & Reports
 - `POST /api/v1/quizzes/rewards/spend/` - Spend tokens on rewards (e.g., avatars).
 - `POST /api/v1/reports/generate/` - Generate an AI-powered feedback report for a quiz attempt.
+
+## 📚 Books (AI-powered stories with images)
+- Generate stories with 2–3 pages and relevant images from Pixabay
+- Each story is tailored to the child’s topic, age, grade, and lexile
+- Each story has its own quiz (separate from lesson quizzes)
+- Images are deduplicated and stored locally
+- Fallback image is used if Pixabay fails
+
+### 📝 Lessons (Image-based quiz generation)
+- Upload lesson images, extract text, and generate quizzes from lesson content
+- Each lesson has its own quiz (separate from books quizzes)
+
+### Shared Features
+- Both books and lessons use the same child, lexile, age, grade, and authentication system
+- Both books and lessons use the same token rewards, performance feedback, and improvement tips
 
 ## 💡 Project Goals
 
